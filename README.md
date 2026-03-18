@@ -54,7 +54,5 @@ The application will automatically open in your default web browser at http://lo
 Model Architecture details
 The core model is built using Transfer Learning. We utilized the pre-trained MobileNetV2 architecture as the base feature extractor, freezing its initial layers. A custom classification head (Dense layers) was added and fine-tuned on our specific waste dataset. The model expects input images of shape (224, 224, 3) and uses the Adam optimizer with Sparse Categorical Crossentropy loss.
 
-Author
+# Author
 Praneel Chhabria        
-├── .gitignore              # Ignored files for Git
-└── README.md               # Project documentation
