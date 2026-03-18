@@ -83,13 +83,6 @@ st.markdown("""
         margin-top: 5px;
     }
 
-    .stFileUploader {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px dashed #666;
-        border-radius: 15px;
-        padding: 30px;
-    }
-    
     div.stButton > button:first-child {
         background-color: #00E676;
         color: #000;
@@ -149,21 +142,19 @@ col1, col2 = st.columns([1, 1.5], gap="large")
 
 with col1:
     st.markdown("### 1. Data Source")
-    st.write("Upload waste object image for real-time analysis.")
+    st.write("Scan waste object for real-time analysis.")
     
-    uploaded_file = st.file_uploader("Drop image file here...", type=["jpg", "png", "jpeg"])
+    # Live camera input replaces the file uploader
+    uploaded_file = st.camera_input("📸 Scan Item")
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.markdown('<div style="border-radius: 15px; overflow: hidden; margin-top: 20px; border: 1px solid #444;">', unsafe_allow_html=True)
-        st.image(image, use_column_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
 with col2:
     st.markdown("### 2. Analytics Engine")
     
     if uploaded_file is None:
-        st.info("System Standby. Awaiting Image Input...")
+        st.info("System Standby. Awaiting Camera Input...")
     else:
         if st.button("🔍 Run Classification Model", type="primary", use_container_width=True):
             with st.spinner("Processing neural networks..."):
