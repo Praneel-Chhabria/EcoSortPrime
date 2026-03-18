@@ -3,3 +3,4 @@ tensorflow
 tensorflow-hub
 numpy
 pillow
+setuptools<70.0.0
