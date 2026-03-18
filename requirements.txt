@@ -1,6 +1,6 @@
 streamlit
-tensorflow
+tensorflow==2.15.0
 tensorflow-hub
-numpy
+numpy<2.0.0
 pillow
 setuptools<70.0.0
