@@ -26,6 +26,7 @@ Developed as an initiative for the Synapse AI Club at MIT World Peace University
 │   ├── saved_model.pb      
 │   ├── variables/          
 │   └── assets/
+```
 How to Run Locally
 1. Clone the repository
 
@@ -55,6 +56,5 @@ The core model is built using Transfer Learning. We utilized the pre-trained Mob
 
 Author
 Praneel Chhabria        
-├── requirements.txt        # Python dependencies
 ├── .gitignore              # Ignored files for Git
 └── README.md               # Project documentation
