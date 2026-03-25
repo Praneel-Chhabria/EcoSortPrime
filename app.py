@@ -165,54 +165,59 @@ with col2:
                     
                     # --- PREDICTION ---
                     predictions = model.predict(img_array, verbose=0)
-                    detail_prediction_index = np.argmax(predictions[0])
-                    detail_result = CATEGORIES_DETAIL[detail_prediction_index]
-                    main_result = CATEGORY_MAPPING[detail_result]
+                    confidence_score = np.max(predictions[0]) * 100
                     
-                    # --- DYNAMIC STYLING ---
-                    if main_result == "Wet":
-                        color = "#00E676" # Green
-                        bin_type = "Green Bin (Compost)"
-                        action = "Composting"
-                    elif main_result == "Dry":
-                        color = "#2979FF" # Blue
-                        bin_type = "Blue Bin (Recyclable/Dry)"
-                        action = "Sorting & Recovery"
-                    else: # Domestic Hazardous
-                        color = "#FF1744" # Red
-                        bin_type = "Hazardous Bin"
-                        action = "Safe Disposal"
+                    if confidence_score < 50.0:
+                        st.warning(f"⚠️ Confidence too low ({confidence_score:.1f}%). Please reposition the item in better lighting and rescan.")
+                    else:
+                        detail_prediction_index = np.argmax(predictions[0])
+                        detail_result = CATEGORIES_DETAIL[detail_prediction_index]
+                        main_result = CATEGORY_MAPPING[detail_result]
+                        
+                        # --- DYNAMIC STYLING ---
+                        if main_result == "Wet":
+                            color = "#00E676" # Green
+                            bin_type = "Green Bin (Compost)"
+                            action = "Composting"
+                        elif main_result == "Dry":
+                            color = "#2979FF" # Blue
+                            bin_type = "Blue Bin (Recyclable/Dry)"
+                            action = "Sorting & Recovery"
+                        else: # Domestic Hazardous
+                            color = "#FF1744" # Red
+                            bin_type = "Hazardous Bin"
+                            action = "Safe Disposal"
 
-                    # --- RENDER CARD ---
-                    html_code = f"""
-<div class="property-card">
-    <div class="card-header">
-        <h2 style="color: {color}; margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase;">
-            🗑️ {main_result}
-        </h2>
-    </div>
-    <div class="card-body">
-        <p style="text-align:center; color: #ccc; margin-top: 10px; font-size: 1rem; line-height: 1.6;">
-            System has identified this item based on visual patterns. Following the recommended disposal protocol below ensures proper waste handling.
-        </p>
-        <div class="metric-row">
-            <div class="metric-item">
-                <div class="metric-label">Target Bin</div>
-                <div class="metric-value" style="color: {color};">{bin_type}</div>
-            </div>
-            <div class="metric-item">
-                <div class="metric-label">Action</div>
-                <div class="metric-value" style="color: #fff;">{action}</div>
-            </div>
-            <div class="metric-item">
-                <div class="metric-label">Impact</div>
-                <div class="metric-value" style="color: #fff;">Positive</div>
+                        # --- RENDER CARD ---
+                        html_code = f"""
+    <div class="property-card">
+        <div class="card-header">
+            <h2 style="color: {color}; margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase;">
+                🗑️ {main_result}
+            </h2>
+        </div>
+        <div class="card-body">
+            <p style="text-align:center; color: #ccc; margin-top: 10px; font-size: 1rem; line-height: 1.6;">
+                System Confidence: {confidence_score:.1f}%
+            </p>
+            <div class="metric-row">
+                <div class="metric-item">
+                    <div class="metric-label">Target Bin</div>
+                    <div class="metric-value" style="color: {color};">{bin_type}</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Action</div>
+                    <div class="metric-value" style="color: #fff;">{action}</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label">Impact</div>
+                    <div class="metric-value" style="color: #fff;">Positive</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-"""
-                    st.markdown(html_code, unsafe_allow_html=True)
+    """
+                        st.markdown(html_code, unsafe_allow_html=True)
 
                 except Exception as e:
                     st.error(f"Analysis Failed: {e}")
