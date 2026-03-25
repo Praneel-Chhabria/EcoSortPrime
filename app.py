@@ -7,7 +7,6 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from PIL import Image
 
-# --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="EcoSort Pro | Smart Waste Analytics",
     page_icon="♻️",
@@ -15,7 +14,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- CUSTOM CSS ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -100,7 +98,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- CONFIGURATION & MODEL LOADING ---
 CATEGORIES_DETAIL = ['battery', 'biological', 'cardboard', 'clothes', 'glass', 
                      'metal', 'paper', 'plastic', 'shoes', 'trash']
 
@@ -127,7 +124,6 @@ except Exception as e:
     st.error(f"⚠️ SYSTEM ERROR: Neural Network Model ('waste_model_v1') not found. Details: {e}")
     st.stop()
 
-# --- HERO SECTION (Navbar) ---
 st.markdown("""
 <div class="nav-container">
     <h1 style="margin:0; font-family: 'Helvetica Neue', sans-serif; font-size: 2.5rem;">
@@ -137,14 +133,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- MAIN LAYOUT ---
 col1, col2 = st.columns([1, 1.5], gap="large")
 
 with col1:
     st.markdown("### 1. Data Source")
     st.write("Scan waste object for real-time analysis.")
     
-    # Live camera input replaces the file uploader
     uploaded_file = st.camera_input("📸 Scan Item")
     
     if uploaded_file is not None:
@@ -159,36 +153,33 @@ with col2:
         if st.button("🔍 Run Classification Model", type="primary", use_container_width=True):
             with st.spinner("Processing neural networks..."):
                 try:
-                    # --- PREPROCESSING ---
                     img_resized = image.convert('RGB').resize((224, 224))
                     img_array = np.array(img_resized)[np.newaxis, ...]
                     
-                    # --- PREDICTION ---
                     predictions = model.predict(img_array, verbose=0)
-                    confidence_score = np.max(predictions[0]) * 100
+                    softmax_preds = tf.nn.softmax(predictions[0]).numpy()
+                    confidence_score = np.max(softmax_preds) * 100
                     
                     if confidence_score < 50.0:
                         st.warning(f"⚠️ Confidence too low ({confidence_score:.1f}%). Please reposition the item in better lighting and rescan.")
                     else:
-                        detail_prediction_index = np.argmax(predictions[0])
+                        detail_prediction_index = np.argmax(softmax_preds)
                         detail_result = CATEGORIES_DETAIL[detail_prediction_index]
                         main_result = CATEGORY_MAPPING[detail_result]
                         
-                        # --- DYNAMIC STYLING ---
                         if main_result == "Wet":
-                            color = "#00E676" # Green
+                            color = "#00E676"
                             bin_type = "Green Bin (Compost)"
                             action = "Composting"
                         elif main_result == "Dry":
-                            color = "#2979FF" # Blue
+                            color = "#2979FF"
                             bin_type = "Blue Bin (Recyclable/Dry)"
                             action = "Sorting & Recovery"
-                        else: # Domestic Hazardous
-                            color = "#FF1744" # Red
+                        else:
+                            color = "#FF1744"
                             bin_type = "Hazardous Bin"
                             action = "Safe Disposal"
 
-                        # --- RENDER CARD ---
                         html_code = f"""
     <div class="property-card">
         <div class="card-header">
@@ -198,7 +189,7 @@ with col2:
         </div>
         <div class="card-body">
             <p style="text-align:center; color: #ccc; margin-top: 10px; font-size: 1rem; line-height: 1.6;">
-                System Confidence: {confidence_score:.1f}%
+                System has identified this item based on visual patterns. Following the recommended disposal protocol below ensures proper waste handling.
             </p>
             <div class="metric-row">
                 <div class="metric-item">
