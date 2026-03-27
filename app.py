@@ -2,6 +2,7 @@ import os
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
 import streamlit as st
+import streamlit.components.v1 as components
 import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -98,6 +99,29 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+components.html(
+    """
+    <script>
+    const doc = window.parent.document;
+    doc.addEventListener('keydown', function(e) {
+        if (e.key.toLowerCase() === 'c') {
+            const buttons = Array.from(doc.querySelectorAll('button'));
+            const captureBtn = buttons.find(b => b.getAttribute('aria-label') === 'Take Photo' || b.innerText.includes('Take Photo'));
+            if (captureBtn) captureBtn.click();
+        }
+        
+        if (e.key.toLowerCase() === 'r' || e.key === 'Enter') {
+            const buttons = Array.from(doc.querySelectorAll('button'));
+            const runBtn = buttons.find(b => b.innerText.includes('Run Classification Model'));
+            if (runBtn) runBtn.click();
+        }
+    });
+    </script>
+    """,
+    height=0,
+    width=0,
+)
+
 CATEGORIES_DETAIL = ['battery', 'biological', 'cardboard', 'clothes', 'glass', 
                      'metal', 'paper', 'plastic', 'shoes', 'trash']
 
@@ -159,7 +183,7 @@ with col2:
                     predictions = model.predict(img_array, verbose=0)
                     softmax_preds = tf.nn.softmax(predictions[0]).numpy()
                     confidence_score = np.max(softmax_preds) * 100
-                    st.markdown(f"Confidence score is {confidence_score}")
+                    
                     if confidence_score < 50.0:
                         st.warning(f"⚠️ Confidence too low ({confidence_score:.1f}%). Please reposition the item in better lighting and rescan.")
                     else:
