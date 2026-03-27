@@ -159,7 +159,7 @@ with col2:
                     predictions = model.predict(img_array, verbose=0)
                     softmax_preds = tf.nn.softmax(predictions[0]).numpy()
                     confidence_score = np.max(softmax_preds) * 100
-                    
+                    st.markdown(f"Confidence score is {confidence_score}")
                     if confidence_score < 50.0:
                         st.warning(f"⚠️ Confidence too low ({confidence_score:.1f}%). Please reposition the item in better lighting and rescan.")
                     else:
